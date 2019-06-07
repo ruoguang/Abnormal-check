@@ -15,13 +15,23 @@ public class Test {
 
     @org.junit.Test
     public void test(){
-        ArrayList<Integer> arrayList = new ArrayList<>();
-        Collections.addAll(arrayList,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2034,1,1,1,1,2023);
+        ArrayList<String> arrayList = new ArrayList<>();
+        Collections.addAll(
+                arrayList,
+                23+"",
+                26+"",
+                26+"",
+                23+"",
+                32+"",
+                22+"",
+                23+"",
+                23+"");
 
         System.out.println(CCUtil.autoOcMap(arrayList));
 
         System.out.println(CCUtil.autoFusionList(arrayList));
 
         System.out.println(CCUtil.fusionValue(arrayList));
+
     }
 }
