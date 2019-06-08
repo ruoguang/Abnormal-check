@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author CC
@@ -21,7 +22,62 @@ public class CCUtil {
         arithmetic = new CCAritheticCore();
     }
 
-    public static Map<Integer, Double> autoOcMap(List list) {
+    public static boolean ocExist(List list) {
+        if (list == null) {
+            return false;
+        } else {
+            int size = list.size();
+            if (size <= 3) {
+                return false;
+            }
+            if (size < 8) {
+                for (Object o : arithmetic.ocbase(1, list)) {
+                    if (Double.parseDouble(o.toString()) > 0) {
+                        return true;
+                    }
+                }
+            }
+            if (size < 11) {
+                for (Object o : arithmetic.ocbase(2, list)) {
+                    if (Double.parseDouble(o.toString()) > 0) {
+                        return true;
+                    }
+                }
+            }
+            if (size >= 11) {
+                for (Object o : arithmetic.ocbase(3, list)) {
+                    if (Double.parseDouble(o.toString()) > 0) {
+                        return true;
+                    }
+                }
+            }
+            throw new RuntimeException("Judgment of failure！");
+        }
+    }
+
+    public static List< Double> ocBase(List list) {
+        List<Double> doubles = new ArrayList<>();
+        if (list == null) {
+            doubles = null;
+        } else {
+            int size = list.size();
+            if (size <= 3) {
+                doubles = null;
+            }
+            if (size < 8) {
+                doubles = arithmetic.ocbase(1, list);
+            }
+            if (size < 11) {
+                doubles = arithmetic.ocbase(2, list);
+            }
+            if (size >= 11) {
+                doubles = arithmetic.ocbase(3, list);
+            }
+        }
+        return doubles;
+    }
+
+    public static Map<Integer, Double> ocMap(List list) {
         Map<Integer, Double> map = new HashMap<>();
         if (list == null) {
             map = null;
@@ -43,7 +99,7 @@ public class CCUtil {
         return map;
     }
 
-    public static List<Double> autoFusionList(List list) {
+    public static List<Double> fusionList(List list) {
         List<Double> doubles = new ArrayList<>();
         if (list == null) {
             doubles = null;
@@ -65,7 +121,7 @@ public class CCUtil {
         return doubles;
     }
 
-    public static double fusionValue(List list){
+    public static double fusionValue(List list) {
         double result = 0;
         if (list == null) {
             result = 0;
@@ -85,5 +141,20 @@ public class CCUtil {
             }
         }
         return result;
+    }
+
+    private static  int cocMapIndex = 0;
+    private static Map<Integer, List<Double>> resultMap = new HashMap<>();
+
+    public static synchronized Map<Integer, List<Double>> cocMap(List list) {
+        if (!ocExist(list)) {
+            Map<Integer, List<Double>> coctMap = resultMap;
+            resultMap=null;
+            cocMapIndex = 0;
+            return coctMap;
+        }
+        Map<Integer, Double> temp = ocMap(list);
+        resultMap.put(cocMapIndex++,temp.values().stream().collect(Collectors.toList()));
+        return cocMap(new ArrayList<>(resultMap.values()));
     }
 }

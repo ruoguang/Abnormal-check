@@ -15,21 +15,32 @@ public class Test {
 
     @org.junit.Test
     public void test(){
-        ArrayList<String> arrayList = new ArrayList<>();
+        ArrayList<Double> arrayList = new ArrayList<>();
         Collections.addAll(
                 arrayList,
-                23+"",
-                26+"",
-                26+"",
-                23+"",
-                32+"",
-                22+"",
-                23+"",
-                23+"");
+                58.994,
+                58.976,
+                58.983,
+                58.992,
+                59.004,
+                59.024,
+                59.024,
+                59.034,
+                59.014,
+                58.044,
+                59.054,
+                59.064,
+                59.074
+                );
+        System.out.println(CCUtil.ocExist(arrayList));
 
-        System.out.println(CCUtil.autoOcMap(arrayList));
+        System.out.println(CCUtil.ocBase(arrayList));
 
-        System.out.println(CCUtil.autoFusionList(arrayList));
+        System.out.println(CCUtil.cocMap(arrayList));
+
+        System.out.println(CCUtil.ocMap(arrayList));
+
+        System.out.println(CCUtil.fusionList(arrayList));
 
         System.out.println(CCUtil.fusionValue(arrayList));
 
