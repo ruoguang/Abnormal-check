@@ -15,48 +15,56 @@ import java.util.*;
 public class CCAritheticCore implements CCArithmetic {
 
     @Override
-    public Map<Integer, Double> oc(int sensitivity, List<Double> list) {
-        Map<Integer, Double> map = new HashMap<>();
-        List<Double> ocbase = ocbase(sensitivity, list);
-        for (int i = 0; i < ocbase.size(); i++) {
-            if (ocbase.get(i) > 0) {
-                map.put(i, list.get(i));
+    public Set<Integer> oc(int sensitivity, double[] datas) {
+        Set<Integer> set = new HashSet<>();
+        double[] ocbase = ocbase(sensitivity, datas);
+        for (int i = 0; i < ocbase.length; i++) {
+            if (ocbase[i] > 0) {
+                set.add(i);
             }
         }
-        return map;
+        return set;
     }
 
     @Override
-    public double avg(List list) {
-        return sum(list) / count(list);
+    public void coc(int sensitivity, double[] datas, Set<Integer> res) {
+        double[] ocbase = ocbase(sensitivity, datas, res);
+        for (int i = 0; i < ocbase.length; i++) {
+            if (!res.contains(i) && ocbase[i] > 0) {
+                res.add(i);
+            }
+        }
     }
 
     @Override
-    public double sum(List list) {
-        double result = 0;
-        if (list != null) {
-            String name = list.get(0).getClass().getName();
-            switch (name) {
-                case "java.lang.String":
-                    for (Object o : list) {
-                        result += Double.parseDouble(o.toString());
-                    }
-                    break;
-                case "java.lang.Double":
-                    for (Object o : list) {
-                        result += Double.parseDouble(o.toString());
-                    }
-                    break;
-                case "java.lang.Integer":
-                    for (Object o : list) {
-                        result += Double.parseDouble(o.toString());
-                    }
-                    break;
-                default:
-                    throw new RuntimeException("error params");
-            }
-        }
+    public double avg(double[] datas, Set<Integer> set) {
+        return sum(datas, set) / (datas.length - set.size());
+    }
 
+    @Override
+    public double avg(double[] datas) {
+        return sum(datas) / (datas.length);
+    }
+
+    @Override
+    public double sum(double[] datas, Set<Integer> set) {
+        double result = 0D;
+        int index = 0;
+        for (double data : datas) {
+            if (!set.contains(index)) {
+                result += data;
+            }
+            index++;
+        }
+        return result;
+    }
+
+    @Override
+    public double sum(double[] datas) {
+        double result = 0D;
+        for (double data : datas) {
+            result += data;
+        }
         return result;
     }
 
@@ -66,51 +74,114 @@ public class CCAritheticCore implements CCArithmetic {
     }
 
     @Override
-    public List<Double> re(List list) {
-        ArrayList<Double> doubles = new ArrayList<>();
-
-        double avg = avg(list);
-        for (int i = 0; i < list.size(); i++) {
-            doubles.add(Double.parseDouble(list.get(i).toString()) - avg);
+    public double[] re(double[] datas, Set<Integer> set) {
+        double[] doubles = new double[datas.length];
+        double avg = avg(datas, set);
+        for (int i = 0; i < datas.length; i++) {
+            if (!set.contains(i)) {
+                doubles[i] = datas[i] - avg;
+            }
         }
         return doubles;
     }
 
     @Override
-    public double sd(List<Double> list) {
-        double temp = 0;
-        List<Double> re = re(list);
-        for (Double o : re) {
-            temp += Math.pow(o, 2);
+    public double sd(double[] datas, Set<Integer> set) {
+        double temp = 0D;
+        double[] re = re(datas, set);
+        int index = 0;
+        for (double o : re) {
+            if (!set.contains(index)) {
+                temp += Math.pow(o, 2);
+            }
+            index++;
         }
-        return Math.sqrt(temp / (count(list) - 1));
+        return Math.sqrt(temp / (datas.length - set.size() - 1));
+    }
+
+
+    @Override
+    public double sd(double[] datas) {
+        Set<Integer> set = new HashSet<>();
+        return sd(datas, set);
     }
 
     @Override
-    public List<Double> fusionToList(int sensitivity, List<Double> list) {
-        List<Integer> keyList = new ArrayList<>(oc(sensitivity, list).keySet());
-        for (int i = keyList.size() - 1; i >= 0; i--) {
-            list.remove(keyList.get(i).intValue());
-        }
-        return list;
-    }
-
-    @Override
-    public List<Double> ocbase(int sensitivity, List list) {
-        ArrayList<Double> doubles = new ArrayList<>();
-        double result = sensitivity * sd(list);
-        double avg=avg(list);
-        for (Object o : list) {
-            double abs = Math.abs(Double.parseDouble(o.toString()) - avg);
-            doubles.add(abs - result);
+    public double[] fusionToList(int sensitivity, double[] datas) {
+        Set<Integer> set = oc(sensitivity, datas);
+        double[] doubles = new double[datas.length - set.size()];
+        Iterator<Integer> iterator = set.iterator();
+        Integer next = iterator.hasNext() ? iterator.next() : null;
+        int index = 0;
+        for (int i = 0; i < datas.length; i++) {
+            if (next != null && next.equals(i)) {
+                next = iterator.hasNext() ? iterator.next() : null;
+                continue;
+            }
+            doubles[index++] = datas[i];
         }
         return doubles;
     }
 
     @Override
-    public double getFusionValue(int sensitivity, List<Double> list) {
-        return avg(list);
+    public double[] ocbase(int sensitivity, double[] datas) {
+        double[] doubles = new double[datas.length];
+        double result = sensitivity * sd(datas);
+        double avg = avg(datas);
+        int index = 0;
+        for (double o : datas) {
+            doubles[index++] = Math.abs(o - avg) - result;
+        }
+        return doubles;
     }
 
 
+    @Override
+    public double[] ocbase(int sensitivity, double[] datas, Set<Integer> set) {
+        double[] doubles = new double[datas.length];
+        double result = sensitivity * sd(datas, set);
+        double avg = avg(datas, set);
+        int index = 0;
+        for (double o : datas) {
+            if (!set.contains(index)) {
+                doubles[index] = Math.abs(o - avg) - result;
+            }
+            index++;
+        }
+        return doubles;
+
+    }
+
+    @Override
+    public double getFusionValue(int sensitivity, double[] datas) {
+        return avg(fusionToList(sensitivity, datas));
+    }
+
+    @Override
+    public boolean ocExist(int sensitivity, double[] datas) {
+        double result = sensitivity * sd(datas);
+        double avg = avg(datas);
+        for (double o : datas) {
+            if (Math.abs(o - avg) - result > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean ocExist(int sensitivity, double[] datas, Set<Integer> set) {
+        double result = sensitivity * sd(datas, set);
+        double avg = avg(datas, set);
+        int index = 0;
+        for (double o : datas) {
+            if (!set.contains(index)) {
+                if (Math.abs(o - avg) - result > 0) {
+                    return true;
+                }
+            }
+            index++;
+        }
+        return false;
+    }
 }
