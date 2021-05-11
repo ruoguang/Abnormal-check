@@ -34,10 +34,12 @@
 >下载和导入依赖后，使用工具类CCUtil即可。
 
 >以下都是提供自动化的算法，介绍几个常用的api。
-> * ocExist(list)方法：只要传入一个集合，就能检查出中间是否存在异常值，存在返回true，反之；     
-> * ocMap(list)方法：只要传入一个集合，就能返回异常值的下标和值的map集合,如上面实例中返回是{4=32}；
-> * fusionList(list)方法：只要传入集合，将异常值去除后的剩下元素的集合输出，如上面实例就返回去掉32度剩下7个温度的集合；
-> * fusionValue(list) 方法：传入一个集合，返回将异常值去除后剩下元素的平均值。
+> * ocExist(Object...)方法：只要传入一个集合，就能检查出中间是否存在异常值，存在返回true，反之；     
+> * ocSet(Object...)方法：只要传入一个集合，就能返回异常值的下标和值的map集合,如上面实例中返回是{4=32}；
+> * fusionList(Object...)方法：只要传入集合，将异常值去除后的剩下元素的集合输出，如上面实例就返回去掉32度剩下7个温度的集合；
+> * fusionValue(Object...) 方法：传入一个集合，返回将异常值去除后剩下元素的平均值；
+> * finalSet(Object...)方法：最终不存在异常值得数组；
+> * finalFusionValue(Object...) 方法：迭代最后得到的融合值。
 ## 4. Algorithm principle 算法原理
 > * 基于3σ准则改善的cc算法。
 > * [论文基础](https://pcsdata.baidu.com/doc/4ffd1434d1cee7a2499382bc102add6c?fid=3495865747-250528-853441141972489&time=1559987974&rt=pr&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-iJ5a9zfkJ1qpK0peeZoI0t2g0j0%3d&expires=8h&chkbd=0&chkv=0&dp-logid=3681853685609331921&dp-callid=0&type=pdf&from=lo&method=newview&ndb_key=n-lodocview-qd-lo-4ffd1434d1cee7a2499382bc102add6c-convert-pdf&region=Qingdao&file_size=2718787&file_type=doc)   
